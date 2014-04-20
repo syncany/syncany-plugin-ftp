@@ -17,8 +17,8 @@
  */
 package org.syncany.tests.connection.plugins.ftp;
 
-import static org.junit.Assert.*;
-import junit.framework.Assert;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -29,15 +29,18 @@ import org.syncany.connection.plugins.ftp.FtpConnection;
 
 /**
  * @author Vincent Wiencek <vwiencek@gmail.com>
+ * @author Phililpp Heckel <philipp.heckel@gmail.com>
  */
 public class FtpTransferManagerRepoTest {
 	@BeforeClass
 	public static void beforeTestSetup() throws Exception {
 		EmbeddedTestFtpServer.startServer();
 
-		EmbeddedTestFtpServer.mkdir("newRepo", EmbeddedTestFtpServer.USER1);
-		EmbeddedTestFtpServer.mkdir("nonEmptyRepo", EmbeddedTestFtpServer.USER1);
-		EmbeddedTestFtpServer.mkdir("nonEmptyRepo/folder", EmbeddedTestFtpServer.USER1);
+		EmbeddedTestFtpServer.mkdir("emptyFolder", EmbeddedTestFtpServer.USER1);
+		
+		EmbeddedTestFtpServer.mkdir("validRepo", EmbeddedTestFtpServer.USER1);
+		EmbeddedTestFtpServer.createTestFile("validRepo/syncany", EmbeddedTestFtpServer.USER1);
+		
 		EmbeddedTestFtpServer.mkdir("canNotCreate", EmbeddedTestFtpServer.USER2);
 	}
 
@@ -47,32 +50,71 @@ public class FtpTransferManagerRepoTest {
 	}
 
 	@Test
-	public void testFtpTransferManagerNewRepo() throws StorageException {
-		StorageTestResult testResult = test("/newRepo", true);
+	public void testFtpTransferManagerEmptyFolderTestCreateTarget() throws StorageException {
+		StorageTestResult testResult = test("/emptyFolder", true);
 		
 		assertTrue(testResult.isTargetCanConnect());
+		assertTrue(testResult.isTargetExists());
 		assertTrue(testResult.isTargetCanCreate());
 		assertTrue(testResult.isTargetCanWrite());
-		assertTrue(testResult.isTargetExists());
 		assertFalse(testResult.isRepoFileExists());				
 	}
 	
 	@Test
-	public void testFtpTransferManager() throws StorageException {
-		Assert.assertEquals(StorageTestResult, test("/newRepo"));
-		Assert.assertEquals(StorageTestResult.NO_REPO, test("/randomRepo"));
-		Assert.assertEquals(StorageTestResult.REPO_EXISTS_BUT_INVALID, test("/nonEmptyRepo"));
-		Assert.assertEquals(StorageTestResult.NO_REPO_CANNOT_CREATE, test("/canNotCreate/inside"));
+	public void testFtpTransferManagerEmptyFolderNoTestCreateTarget() throws StorageException {
+		StorageTestResult testResult = test("/emptyFolder", false);
+		
+		assertTrue(testResult.isTargetCanConnect());
+		assertTrue(testResult.isTargetExists());
+		assertTrue(testResult.isTargetCanCreate());
+		assertTrue(testResult.isTargetCanWrite());
+		assertFalse(testResult.isRepoFileExists());				
 	}
 	
 	@Test
-	public void testFtpTransferManager() throws StorageException {
-		Assert.assertEquals(StorageTestResult, test("/newRepo"));
-		Assert.assertEquals(StorageTestResult.NO_REPO, test("/randomRepo"));
-		Assert.assertEquals(StorageTestResult.REPO_EXISTS_BUT_INVALID, test("/nonEmptyRepo"));
-		Assert.assertEquals(StorageTestResult.NO_REPO_CANNOT_CREATE, test("/canNotCreate/inside"));
+	public void testFtpTransferManagerValidRepoTestCreateTarget() throws StorageException {
+		StorageTestResult testResult = test("/validRepo", true);
+		
+		assertTrue(testResult.isTargetCanConnect());
+		assertTrue(testResult.isTargetExists());
+		assertTrue(testResult.isTargetCanCreate());
+		assertTrue(testResult.isTargetCanWrite());
+		assertTrue(testResult.isRepoFileExists());				
 	}
-
+	
+	@Test
+	public void testFtpTransferManagerValidRepoNoTestCreateTarget() throws StorageException {
+		StorageTestResult testResult = test("/validRepo", false);
+		
+		assertTrue(testResult.isTargetCanConnect());
+		assertTrue(testResult.isTargetExists());
+		assertTrue(testResult.isTargetCanCreate());
+		assertTrue(testResult.isTargetCanWrite());
+		assertTrue(testResult.isRepoFileExists());				
+	}
+	
+	@Test
+	public void testFtpTransferManagerNonExistingFolderTestCreateTarget() throws StorageException {
+		StorageTestResult testResult = test("/nonExistingFolder", true);
+		
+		assertTrue(testResult.isTargetCanConnect());
+		assertFalse(testResult.isTargetExists());
+		assertTrue(testResult.isTargetCanCreate());
+		assertFalse(testResult.isTargetCanWrite());
+		assertFalse(testResult.isRepoFileExists());				
+	}
+	
+	@Test
+	public void testFtpTransferManagerNonExistingFolderNoTestCreateTarget() throws StorageException {
+		StorageTestResult testResult = test("/nonExistingFolder", false);
+		
+		assertTrue(testResult.isTargetCanConnect());
+		assertFalse(testResult.isTargetExists());
+		assertFalse(testResult.isTargetCanCreate());
+		assertFalse(testResult.isTargetCanWrite());
+		assertFalse(testResult.isRepoFileExists());				
+	}
+	
 	public StorageTestResult test(String path, boolean testCreateTarget) throws StorageException {
 		FtpConnection connection = workingConnection();
 		connection.setPath(path);

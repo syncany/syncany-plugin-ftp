@@ -17,6 +17,7 @@
  */
 package org.syncany.tests.connection.plugins.ftp;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.SocketException;
@@ -137,6 +138,22 @@ public class EmbeddedTestFtpServer {
 		ftp.enterLocalPassiveMode();
 		ftp.setFileType(FTPClient.BINARY_FILE_TYPE); // Important !!!
 		ftp.makeDirectory(path);
+
+		ftp.disconnect();
+		ftp = null;
+	}
+	
+	public static void createTestFile(String path, String user) throws SocketException, IOException {
+		FTPClient ftp = new FTPClient();
+		ftp.setConnectTimeout(3000);
+		ftp.setDataTimeout(3000);
+		ftp.setDefaultTimeout(3000);
+
+		ftp.connect(HOST, PORT);
+		ftp.login(user, PASSWORD1);
+		ftp.enterLocalPassiveMode();
+		ftp.setFileType(FTPClient.BINARY_FILE_TYPE); // Important !!!
+		ftp.storeFile(path, new ByteArrayInputStream(new byte[] { 0x01, 0x02 }));
 
 		ftp.disconnect();
 		ftp = null;
