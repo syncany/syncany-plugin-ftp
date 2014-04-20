@@ -17,13 +17,14 @@
  */
 package org.syncany.tests.connection.plugins.ftp;
 
+import static org.junit.Assert.*;
 import junit.framework.Assert;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.syncany.connection.plugins.StorageException;
-import org.syncany.connection.plugins.TransferManager.StorageTestResult;
+import org.syncany.connection.plugins.StorageTestResult;
 import org.syncany.connection.plugins.ftp.FtpConnection;
 
 /**
@@ -46,17 +47,37 @@ public class FtpTransferManagerRepoTest {
 	}
 
 	@Test
+	public void testFtpTransferManagerNewRepo() throws StorageException {
+		StorageTestResult testResult = test("/newRepo", true);
+		
+		assertTrue(testResult.isTargetCanConnect());
+		assertTrue(testResult.isTargetCanCreate());
+		assertTrue(testResult.isTargetCanWrite());
+		assertTrue(testResult.isTargetExists());
+		assertFalse(testResult.isRepoFileExists());				
+	}
+	
+	@Test
 	public void testFtpTransferManager() throws StorageException {
-		Assert.assertEquals(StorageTestResult.REPO_EXISTS_BUT_INVALID, test("/newRepo"));
+		Assert.assertEquals(StorageTestResult, test("/newRepo"));
+		Assert.assertEquals(StorageTestResult.NO_REPO, test("/randomRepo"));
+		Assert.assertEquals(StorageTestResult.REPO_EXISTS_BUT_INVALID, test("/nonEmptyRepo"));
+		Assert.assertEquals(StorageTestResult.NO_REPO_CANNOT_CREATE, test("/canNotCreate/inside"));
+	}
+	
+	@Test
+	public void testFtpTransferManager() throws StorageException {
+		Assert.assertEquals(StorageTestResult, test("/newRepo"));
 		Assert.assertEquals(StorageTestResult.NO_REPO, test("/randomRepo"));
 		Assert.assertEquals(StorageTestResult.REPO_EXISTS_BUT_INVALID, test("/nonEmptyRepo"));
 		Assert.assertEquals(StorageTestResult.NO_REPO_CANNOT_CREATE, test("/canNotCreate/inside"));
 	}
 
-	public StorageTestResult test(String path) throws StorageException {
-		FtpConnection cnx = workingConnection();
-		cnx.setPath(path);
-		return cnx.createTransferManager().test();
+	public StorageTestResult test(String path, boolean testCreateTarget) throws StorageException {
+		FtpConnection connection = workingConnection();
+		connection.setPath(path);
+		
+		return connection.createTransferManager().test(testCreateTarget);
 	}
 
 	public FtpConnection workingConnection() {
