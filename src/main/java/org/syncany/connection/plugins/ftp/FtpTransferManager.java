@@ -17,6 +17,7 @@
  */
 package org.syncany.connection.plugins.ftp;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -148,7 +149,7 @@ public class FtpTransferManager extends AbstractTransferManager {
 		connect();
 
 		try {
-			if (!repoExists() && createIfRequired) {
+			if (!testRepoFileExists() && createIfRequired) {
 				ftp.mkd(repoPath);
 			}
 			
@@ -321,36 +322,99 @@ public class FtpTransferManager extends AbstractTransferManager {
 	}
 	
 	@Override
-	public boolean repoHasWriteAccess() throws StorageException {
+	public boolean testTargetCanWrite() {
 		try {
-			boolean createSuccessful = ftp.makeDirectory(repoPath);
-			ftp.removeDirectory(repoPath);
-			
-			return createSuccessful;
+			if (ftp.changeWorkingDirectory(repoPath)) {
+				String tempRemoteFilePath = repoPath + "/syncany-write-test";
+
+				ftp.setFileType(FTPClient.BINARY_FILE_TYPE); // Important !!!
+				
+				if (ftp.storeFile(tempRemoteFilePath, new ByteArrayInputStream(new byte[] { 0x01, 0x02, 0x03 }))) {
+					ftp.deleteFile(tempRemoteFilePath);
+
+					logger.log(Level.INFO, "testTargetCanWrite: Can write, test file created/deleted successfully.");
+					return true;
+				}
+				else {
+					logger.log(Level.INFO, "testTargetCanWrite: Can NOT write, target does not exist.");
+					return false;
+				}
+			}
+			else {
+				logger.log(Level.INFO, "testTargetCanWrite: Can NOT write, target does not exist.");
+				return false;
+			}
 		}
 		catch (Exception e) {
+			logger.log(Level.INFO, "testTargetCanWrite: Can NOT write to target.", e);
 			return false;
 		}
 	}
 
 	@Override
-	public boolean repoExists() throws StorageException {
+	public boolean testTargetExists() {
 		try {
-			return ftp.changeWorkingDirectory(repoPath);
+			boolean targetExists = ftp.changeWorkingDirectory(repoPath);
+			
+			if (targetExists) {
+				logger.log(Level.INFO, "testTargetExists: Target exists. Chdir successful.");
+				return true;
+			}
+			else {
+				logger.log(Level.INFO, "testTargetExists: Target does NOT exist. Chdir not successful.");
+				return false;
+			}
 		}
 		catch (Exception e) {
+			logger.log(Level.INFO, "testTargetExists: Target does NOT exist. Chdir threw exception.", e);
 			return false;
-		}
-	}
-	
-	@Override
-	public boolean repoIsValid() throws StorageException {				
-		try {
-			String[] listRepoFile = ftp.listNames(new RepoRemoteFile().getName());
-			return (listRepoFile != null) ? listRepoFile.length == 0 : true;
-		}
-		catch (IOException e) {
-			throw new StorageException(e);
 		}		
+	}
+
+	@Override
+	public boolean testTargetCanCreate() {
+		try {
+			if (testTargetExists()) {
+				logger.log(Level.INFO, "testTargetCanCreate: Target already exists, so 'can create' test successful.");
+				return true;
+			}
+			else {
+				if (ftp.makeDirectory(repoPath)) {					
+					ftp.removeDirectory(repoPath);
+
+					logger.log(Level.INFO, "testTargetCanCreate: Target can be created (test-created successfully).");
+					return true;
+				}
+				else {
+					logger.log(Level.INFO, "testTargetCanCreate: Target can NOT be created. Test creation failed.");
+					return false;
+				}
+			}			
+		}
+		catch (Exception e) {
+			logger.log(Level.INFO, "testTargetCanCreate: Target can NOT be created.", e);
+			return false;
+		}		
+	}
+
+	@Override
+	public boolean testRepoFileExists() {
+		try {
+			String repoFilePath = getRemoteFile(new RepoRemoteFile());
+			String[] listRepoFile = ftp.listNames(repoFilePath);
+			
+			if (listRepoFile != null && listRepoFile.length == 1) {
+				logger.log(Level.INFO, "testRepoFileExists: Repo file exists, list(syncany) returned one result.");
+				return true;
+			}
+			else {
+				logger.log(Level.INFO, "testRepoFileExists: Repo file DOES NOT exist.");
+				return false;
+			}
+		}
+		catch (Exception e) {
+			logger.log(Level.INFO, "testRepoFileExists: Target does NOT exist. Chdir threw exception.", e);
+			return false;
+		}				
 	}
 }
