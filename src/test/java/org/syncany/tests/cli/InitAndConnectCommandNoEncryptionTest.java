@@ -18,7 +18,6 @@
 package org.syncany.tests.cli;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.contrib.java.lang.system.TextFromStandardInputStream.emptyStandardInputStream;
 
 import java.io.File;
 import java.util.Map;
@@ -27,17 +26,16 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.contrib.java.lang.system.TextFromStandardInputStream;
-import org.syncany.cli.CommandLineClient;
-import org.syncany.cli.InitConsole;
+//import org.junit.contrib.java.lang.system.TextFromStandardInputStream;
 import org.syncany.tests.connection.plugins.ftp.EmbeddedTestFtpServer;
-import org.syncany.tests.util.TestCliUtil;
 import org.syncany.tests.util.TestConfigUtil;
 import org.syncany.tests.util.TestFileUtil;
 import org.syncany.util.StringUtil;
 
+//import static org.junit.contrib.java.lang.system.TextFromStandardInputStream.emptyStandardInputStream;
+
 public class InitAndConnectCommandNoEncryptionTest {	
-	private File originalWorkingDirectory;
+	/*private File originalWorkingDirectory;
 	
 	@Rule
 	public final TextFromStandardInputStream systemInMock = emptyStandardInputStream();
@@ -164,5 +162,5 @@ public class InitAndConnectCommandNoEncryptionTest {
 		TestCliUtil.deleteTestLocalConfigAndData(clientA);
 		TestFileUtil.deleteDirectory(tempDir);
 		EmbeddedTestFtpServer.stopServer();
-	}	
+	}	*/
 }

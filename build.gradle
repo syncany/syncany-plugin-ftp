@@ -7,10 +7,11 @@ configurations {
 	pluginjar
 }
 
+
 project.ext {
 	pluginId = "ftp"
 	pluginName = "FTP"
-	pluginVersion = "0.1.0"	
+	pluginVersion = "0.1.0-alpha"	
 	pluginDate = new Date()
 	pluginAppMinVersion = "0.1.2-alpha"
 	pluginRelease = project(':syncany').ext.applicationRelease
@@ -20,14 +21,16 @@ project.ext {
 }
 
 dependencies {
-	compile			project(':syncany-lib')
-	compile			project(":syncany-util")	
-	compile			"commons-net:commons-net:2.2"    
+	compile		project(":syncany-lib")
+	compile		project(":syncany-util")	
+	compile		"commons-net:commons-net:2.2"    
 
-	testCompile		project(path : ':syncany-lib', configuration: 'tests')      
-	testCompile		project(path: ":syncany-util", configuration: "tests")
-	testCompile		"junit:junit:4.9"
-	testCompile		"org.apache.ftpserver:ftpserver-core:1.0.6"      
+	pluginjar	"commons-net:commons-net:2.2"
+
+	testCompile	project(path: ":syncany-lib", configuration: "tests")      
+	testCompile	project(path: ":syncany-util", configuration: "tests")
+	testCompile	"junit:junit:4.9"
+	testCompile	"org.apache.ftpserver:ftpserver-core:1.0.6"   
 }
 
 
