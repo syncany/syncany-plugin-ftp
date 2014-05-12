@@ -24,7 +24,6 @@ import org.syncany.connection.plugins.PluginOptionSpec;
 import org.syncany.connection.plugins.PluginOptionSpec.ValueType;
 import org.syncany.connection.plugins.PluginOptionSpecs;
 import org.syncany.connection.plugins.StorageException;
-import org.syncany.connection.plugins.TransferManager;
 
 /**
  * The FTP connection represents the settings required to connect to an
@@ -33,17 +32,12 @@ import org.syncany.connection.plugins.TransferManager;
  *
  * @author Philipp C. Heckel <philipp.heckel@gmail.com>
  */
-public class FtpConnection implements Connection {
+public class FtpConnection extends Connection {
     private String hostname;
     private String username;
     private String password;
     private String path;
     private int port;
-
-    @Override
-    public TransferManager createTransferManager() {
-        return new FtpTransferManager(this);
-    }
   
     public String getHostname() {
         return hostname;

@@ -19,6 +19,7 @@ package org.syncany.connection.plugins.ftp;
 
 import org.syncany.connection.plugins.Connection;
 import org.syncany.connection.plugins.Plugin;
+import org.syncany.connection.plugins.TransferManager;
 
 /**
  * Identifies the FTP-based storage {@link Plugin} for Syncany. 
@@ -33,7 +34,12 @@ public class FtpPlugin extends Plugin {
     public FtpPlugin() {
     	super("ftp");
     }
-    
+
+    @Override
+    public TransferManager createTransferManager(Connection connection) {
+        return new FtpTransferManager((FtpConnection) connection);
+    }
+
     @Override
     public Connection createConnection() {
         return new FtpConnection();

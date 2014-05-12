@@ -33,6 +33,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.syncany.connection.plugins.AbstractTransferManager;
+import org.syncany.connection.plugins.ActionRemoteFile;
 import org.syncany.connection.plugins.DatabaseRemoteFile;
 import org.syncany.connection.plugins.MultiChunkRemoteFile;
 import org.syncany.connection.plugins.RemoteFile;
@@ -71,8 +72,9 @@ public class FtpTransferManager extends AbstractTransferManager {
 	private boolean ftpIsLoggedIn;
 
 	private String repoPath;
-	private String multichunkPath;
-	private String databasePath;
+	private String multichunksPath;
+	private String databasesPath;
+	private String actionsPath;
 
 	public FtpTransferManager(FtpConnection connection) {
 		super(connection);
@@ -81,8 +83,9 @@ public class FtpTransferManager extends AbstractTransferManager {
 		this.ftpIsLoggedIn = false;
 		
 		this.repoPath = connection.getPath().startsWith("/") ? connection.getPath() : "/" + connection.getPath();
-		this.multichunkPath = repoPath + "/multichunks";
-		this.databasePath = repoPath + "/databases";
+		this.multichunksPath = repoPath + "/multichunks";
+		this.databasesPath = repoPath + "/databases";
+		this.actionsPath = repoPath + "/actions";
 	}
 
 	@Override
@@ -153,12 +156,13 @@ public class FtpTransferManager extends AbstractTransferManager {
 				ftp.mkd(repoPath);
 			}
 			
-			ftp.mkd(multichunkPath);
-			ftp.mkd(databasePath);
+			ftp.mkd(multichunksPath);
+			ftp.mkd(databasesPath);
+			ftp.mkd(actionsPath);
 		}
 		catch (IOException e) {
 			forceFtpDisconnect();
-			throw new StorageException("Cannot create directory " + multichunkPath + ", or " + databasePath, e);
+			throw new StorageException("Cannot create directory " + multichunksPath + ", or " + databasesPath, e);
 		}
 	}
 
@@ -311,10 +315,13 @@ public class FtpTransferManager extends AbstractTransferManager {
 
 	private String getRemoteFilePath(Class<? extends RemoteFile> remoteFile) {
 		if (remoteFile.equals(MultiChunkRemoteFile.class)) {
-			return multichunkPath;
+			return multichunksPath;
 		}
 		else if (remoteFile.equals(DatabaseRemoteFile.class)) {
-			return databasePath;
+			return databasesPath;
+		}
+		else if (remoteFile.equals(ActionRemoteFile.class)) {
+			return actionsPath;
 		}
 		else {
 			return repoPath;
