@@ -23,9 +23,11 @@ import static org.junit.Assert.assertTrue;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.syncany.connection.plugins.Plugins;
 import org.syncany.connection.plugins.StorageException;
 import org.syncany.connection.plugins.StorageTestResult;
 import org.syncany.connection.plugins.ftp.FtpConnection;
+import org.syncany.connection.plugins.ftp.FtpPlugin;
 
 /**
  * @author Vincent Wiencek <vwiencek@gmail.com>
@@ -119,11 +121,16 @@ public class FtpTransferManagerRepoTest {
 		FtpConnection connection = workingConnection();
 		connection.setPath(path);
 		
-		return connection.createTransferManager().test(testCreateTarget);
+		return getPlugin().createTransferManager(connection).test(testCreateTarget);
 	}
 
+	public FtpPlugin getPlugin() {
+		return (FtpPlugin) Plugins.get("ftp");
+	}
+	
 	public FtpConnection workingConnection() {
-		FtpConnection connection = new FtpConnection();
+		FtpConnection connection = (FtpConnection) getPlugin().createConnection();
+		
 		connection.setHostname(EmbeddedTestFtpServer.HOST);
 		connection.setPort(EmbeddedTestFtpServer.PORT);
 		connection.setUsername(EmbeddedTestFtpServer.USER1);
