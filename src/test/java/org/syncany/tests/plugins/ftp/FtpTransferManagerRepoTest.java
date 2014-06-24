@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.syncany.tests.connection.plugins.ftp;
+package org.syncany.tests.plugins.ftp;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -23,11 +23,11 @@ import static org.junit.Assert.assertTrue;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.syncany.connection.plugins.Plugins;
-import org.syncany.connection.plugins.StorageException;
-import org.syncany.connection.plugins.StorageTestResult;
-import org.syncany.connection.plugins.ftp.FtpConnection;
-import org.syncany.connection.plugins.ftp.FtpPlugin;
+import org.syncany.plugins.Plugins;
+import org.syncany.plugins.StorageException;
+import org.syncany.plugins.StorageTestResult;
+import org.syncany.plugins.ftp.FtpPlugin;
+import org.syncany.plugins.ftp.FtpTransferSettings;
 
 /**
  * @author Vincent Wiencek <vwiencek@gmail.com>
@@ -118,7 +118,7 @@ public class FtpTransferManagerRepoTest {
 	}
 	
 	public StorageTestResult test(String path, boolean testCreateTarget) throws StorageException {
-		FtpConnection connection = workingConnection();
+		FtpTransferSettings connection = workingConnection();
 		connection.setPath(path);
 		
 		return getPlugin().createTransferManager(connection).test(testCreateTarget);
@@ -128,8 +128,8 @@ public class FtpTransferManagerRepoTest {
 		return (FtpPlugin) Plugins.get("ftp");
 	}
 	
-	public FtpConnection workingConnection() {
-		FtpConnection connection = (FtpConnection) getPlugin().createConnection();
+	public FtpTransferSettings workingConnection() {
+		FtpTransferSettings connection = (FtpTransferSettings) getPlugin().createSettings();
 		
 		connection.setHostname(EmbeddedTestFtpServer.HOST);
 		connection.setPort(EmbeddedTestFtpServer.PORT);
@@ -138,8 +138,8 @@ public class FtpTransferManagerRepoTest {
 		return connection;
 	}
 
-	public FtpConnection invalidConnection() {
-		FtpConnection connection = new FtpConnection();
+	public FtpTransferSettings invalidConnection() {
+		FtpTransferSettings connection = new FtpTransferSettings();
 		connection.setHostname(EmbeddedTestFtpServer.HOST_WRONG);
 		connection.setPort(EmbeddedTestFtpServer.PORT);
 		connection.setUsername(EmbeddedTestFtpServer.USER1);

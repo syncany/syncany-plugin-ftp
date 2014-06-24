@@ -15,15 +15,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.syncany.connection.plugins.ftp;
+package org.syncany.plugins.ftp;
 
 import java.util.Map;
 
-import org.syncany.connection.plugins.Connection;
-import org.syncany.connection.plugins.PluginOptionSpec;
-import org.syncany.connection.plugins.PluginOptionSpec.ValueType;
-import org.syncany.connection.plugins.PluginOptionSpecs;
-import org.syncany.connection.plugins.StorageException;
+import org.syncany.plugins.PluginOptionSpec;
+import org.syncany.plugins.PluginOptionSpec.ValueType;
+import org.syncany.plugins.PluginOptionSpecs;
+import org.syncany.plugins.StorageException;
+import org.syncany.plugins.transfer.TransferSettings;
 
 /**
  * The FTP connection represents the settings required to connect to an
@@ -32,7 +32,7 @@ import org.syncany.connection.plugins.StorageException;
  *
  * @author Philipp C. Heckel <philipp.heckel@gmail.com>
  */
-public class FtpConnection extends Connection {
+public class FtpTransferSettings extends TransferSettings {
     private String hostname;
     private String username;
     private String password;
@@ -102,7 +102,7 @@ public class FtpConnection extends Connection {
 	
     @Override
     public String toString() {
-        return FtpConnection.class.getSimpleName()
+        return FtpTransferSettings.class.getSimpleName()
         + "[hostname=" + hostname + ":" + port + ", username=" + username + ", path=" + path + "]";
     }
 }

@@ -20,8 +20,8 @@ package org.syncany.tests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
-import org.syncany.tests.connection.plugins.ftp.FtpTransferManagerRepoTest;
-import org.syncany.tests.connection.plugins.ftp.FtpTransferManagerTest;
+import org.syncany.tests.plugins.ftp.FtpTransferManagerRepoTest;
+import org.syncany.tests.plugins.ftp.FtpTransferManagerTest;
 
 @RunWith(Suite.class)
 @SuiteClasses({

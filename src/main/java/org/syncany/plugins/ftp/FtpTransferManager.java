@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.syncany.connection.plugins.ftp;
+package org.syncany.plugins.ftp;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -32,20 +32,20 @@ import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
-import org.syncany.connection.plugins.AbstractTransferManager;
-import org.syncany.connection.plugins.ActionRemoteFile;
-import org.syncany.connection.plugins.DatabaseRemoteFile;
-import org.syncany.connection.plugins.MultiChunkRemoteFile;
-import org.syncany.connection.plugins.RemoteFile;
-import org.syncany.connection.plugins.RepoRemoteFile;
-import org.syncany.connection.plugins.StorageException;
-import org.syncany.connection.plugins.TransferManager;
+import org.syncany.plugins.StorageException;
+import org.syncany.plugins.transfer.AbstractTransferManager;
+import org.syncany.plugins.transfer.TransferManager;
+import org.syncany.plugins.transfer.files.ActionRemoteFile;
+import org.syncany.plugins.transfer.files.DatabaseRemoteFile;
+import org.syncany.plugins.transfer.files.MultiChunkRemoteFile;
+import org.syncany.plugins.transfer.files.RemoteFile;
+import org.syncany.plugins.transfer.files.RepoRemoteFile;
 
 /**
  * Implements a {@link TransferManager} based on an FTP storage backend for the
  * {@link FtpPlugin}. 
  * 
- * <p>Using an {@link FtpConnection}, the transfer manager is configured and uses 
+ * <p>Using an {@link FtpTransferSettings}, the transfer manager is configured and uses 
  * a well defined FTP folder to store the Syncany repository data. While repo and
  * master file are stored in the given folder, databases and multichunks are stored
  * in special sub-folders:
@@ -76,7 +76,7 @@ public class FtpTransferManager extends AbstractTransferManager {
 	private String databasesPath;
 	private String actionsPath;
 
-	public FtpTransferManager(FtpConnection connection) {
+	public FtpTransferManager(FtpTransferSettings connection) {
 		super(connection);
 
 		this.ftp = new FTPClient();
@@ -89,8 +89,8 @@ public class FtpTransferManager extends AbstractTransferManager {
 	}
 
 	@Override
-	public FtpConnection getConnection() {
-		return (FtpConnection) super.getConnection();
+	public FtpTransferSettings getConnection() {
+		return (FtpTransferSettings) super.getConnection();
 	}
 
 	@Override

@@ -27,7 +27,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 //import org.junit.contrib.java.lang.system.TextFromStandardInputStream;
-import org.syncany.tests.connection.plugins.ftp.EmbeddedTestFtpServer;
+import org.syncany.tests.plugins.ftp.EmbeddedTestFtpServer;
 import org.syncany.tests.util.TestConfigUtil;
 import org.syncany.tests.util.TestFileUtil;
 import org.syncany.util.StringUtil;
