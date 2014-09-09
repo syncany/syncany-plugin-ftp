@@ -22,7 +22,7 @@ import java.util.Map;
 import org.syncany.plugins.PluginOptionSpec;
 import org.syncany.plugins.PluginOptionSpec.ValueType;
 import org.syncany.plugins.PluginOptionSpecs;
-import org.syncany.plugins.StorageException;
+import org.syncany.plugins.transfer.StorageException;
 import org.syncany.plugins.transfer.TransferSettings;
 
 /**
@@ -33,51 +33,51 @@ import org.syncany.plugins.transfer.TransferSettings;
  * @author Philipp C. Heckel <philipp.heckel@gmail.com>
  */
 public class FtpTransferSettings extends TransferSettings {
-    private String hostname;
-    private String username;
-    private String password;
-    private String path;
-    private int port;
-  
-    public String getHostname() {
-        return hostname;
-    }
+	private String hostname;
+	private String username;
+	private String password;
+	private String path;
+	private int port;
 
-    public void setHostname(String hostname) {
-        this.hostname = hostname;
-    }
+	public String getHostname() {
+		return hostname;
+	}
 
-    public String getPassword() {
-        return password;
-    }
+	public void setHostname(String hostname) {
+		this.hostname = hostname;
+	}
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+	public String getPassword() {
+		return password;
+	}
 
-    public String getPath() {
-        return path;
-    }
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
-    public void setPath(String path) {        
-        this.path = path;
-    }
+	public String getPath() {
+		return path;
+	}
 
-    public int getPort() {
-        return port;
-    }
+	public void setPath(String path) {
+		this.path = path;
+	}
 
-    public void setPort(int port) {
-        this.port = port;
-    }
+	public int getPort() {
+		return port;
+	}
 
-    public String getUsername() {
-        return username;
-    }
+	public void setPort(int port) {
+		this.port = port;
+	}
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
 
 	@Override
 	public void init(Map<String, String> optionValues) throws StorageException {
@@ -89,20 +89,16 @@ public class FtpTransferSettings extends TransferSettings {
 		this.port = Integer.parseInt(optionValues.get("port"));
 	}
 
-	@Override 
+	@Override
 	public PluginOptionSpecs getOptionSpecs() {
-		return new PluginOptionSpecs(
-			new PluginOptionSpec("hostname", "Hostname", ValueType.STRING, true, false, null),
-			new PluginOptionSpec("username", "Username", ValueType.STRING, true, false, null),
-			new PluginOptionSpec("password", "Password", ValueType.STRING, true, true, null),
-			new PluginOptionSpec("path", "Path", ValueType.STRING, true, false, null),
-			new PluginOptionSpec("port", "Port", ValueType.INT, false, false, "21")
-		);
+		return new PluginOptionSpecs(new PluginOptionSpec("hostname", "Hostname", ValueType.STRING, true, false, null), new PluginOptionSpec(
+				"username", "Username", ValueType.STRING, true, false, null), new PluginOptionSpec("password", "Password", ValueType.STRING, true,
+				true, null), new PluginOptionSpec("path", "Path", ValueType.STRING, true, false, null), new PluginOptionSpec("port", "Port",
+				ValueType.INT, false, false, "21"));
 	}
-	
-    @Override
-    public String toString() {
-        return FtpTransferSettings.class.getSimpleName()
-        + "[hostname=" + hostname + ":" + port + ", username=" + username + ", path=" + path + "]";
-    }
+
+	@Override
+	public String toString() {
+		return FtpTransferSettings.class.getSimpleName() + "[hostname=" + hostname + ":" + port + ", username=" + username + ", path=" + path + "]";
+	}
 }
