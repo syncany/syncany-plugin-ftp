@@ -177,12 +177,6 @@ public class FtpTransferManager extends AbstractTransferManager {
 		String remotePath = getRemoteFile(remoteFile);
 
 		try {
-			// Test for existance
-			String[] listFile = ftp.listNames(remotePath);
-			if (listFile == null || listFile.length != 1) {
-				throw new StorageFileNotFoundException("Could not find remoteFile to download " + remoteFile.getName());
-			}
-
 			// Download file
 			File tempFile = createTempFile(localFile.getName());
 			OutputStream tempFOS = new FileOutputStream(tempFile);
@@ -191,7 +185,11 @@ public class FtpTransferManager extends AbstractTransferManager {
 				logger.log(Level.INFO, "FTP: Downloading {0} to temp file {1}", new Object[] { remotePath, tempFile });
 			}
 
-			ftp.retrieveFile(remotePath, tempFOS);
+			boolean success = ftp.retrieveFile(remotePath, tempFOS);
+
+			if (!success) {
+				throw new StorageFileNotFoundException("Could not find remoteFile to download " + remoteFile.getName());
+			}
 
 			tempFOS.close();
 
@@ -287,17 +285,18 @@ public class FtpTransferManager extends AbstractTransferManager {
 
 		try {
 			logger.log(Level.INFO, "FTP: Renaming " + sourceFile + " to " + targetFile);
-			String[] listFile = ftp.listNames(sourcePath);
-			if (listFile == null || listFile.length != 1) {
+
+			boolean success = ftp.rename(sourcePath, targetPath);
+			if (!success) {
 				logger.log(Level.INFO, "FTP: SourceFile does not exist: " + sourceFile);
 				throw new StorageMoveException("Could not find sourceFile to move " + sourceFile.getName());
 			}
-			ftp.rename(sourcePath, targetPath);
 		}
 		catch (IOException e) {
-
+			forceFtpDisconnect();
+			logger.log(Level.SEVERE, "Could not rename" + sourceFile + " to " + targetFile, e);
+			throw new StorageException(e);
 		}
-		throw new StorageException("Implement this you dummy!");
 
 	}
 
