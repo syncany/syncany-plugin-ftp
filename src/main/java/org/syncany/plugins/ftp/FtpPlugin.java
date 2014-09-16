@@ -17,6 +17,7 @@
  */
 package org.syncany.plugins.ftp;
 
+import org.syncany.config.Config;
 import org.syncany.plugins.Plugin;
 import org.syncany.plugins.transfer.TransferManager;
 import org.syncany.plugins.transfer.TransferPlugin;
@@ -32,17 +33,17 @@ import org.syncany.plugins.transfer.TransferSettings;
  * @author Philipp C. Heckel <philipp.heckel@gmail.com>
  */
 public class FtpPlugin extends TransferPlugin {
-    public FtpPlugin() {
-    	super("ftp");
-    }
+	public FtpPlugin() {
+		super("ftp");
+	}
 
-    @Override
-    public TransferManager createTransferManager(TransferSettings connection) {
-        return new FtpTransferManager((FtpTransferSettings) connection);
-    }
+	@Override
+	public TransferManager createTransferManager(TransferSettings connection, Config config) {
+		return new FtpTransferManager((FtpTransferSettings) connection, config);
+	}
 
-    @Override
-    public TransferSettings createSettings() {
-        return new FtpTransferSettings();
-    }
+	@Override
+	public TransferSettings createSettings() {
+		return new FtpTransferSettings();
+	}
 }
