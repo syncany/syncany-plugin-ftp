@@ -43,6 +43,8 @@ import org.syncany.plugins.transfer.files.DatabaseRemoteFile;
 import org.syncany.plugins.transfer.files.MultichunkRemoteFile;
 import org.syncany.plugins.transfer.files.RemoteFile;
 import org.syncany.plugins.transfer.files.SyncanyRemoteFile;
+import org.syncany.plugins.transfer.files.TempRemoteFile;
+import org.syncany.plugins.transfer.files.TransactionRemoteFile;
 
 /**
  * Implements a {@link TransferManager} based on an FTP storage backend for the
@@ -78,6 +80,8 @@ public class FtpTransferManager extends AbstractTransferManager {
 	private String multichunksPath;
 	private String databasesPath;
 	private String actionsPath;
+	private String transactionsPath;
+	private String temporaryPath;
 
 	public FtpTransferManager(FtpTransferSettings connection, Config config) {
 		super(connection, config);
@@ -89,6 +93,8 @@ public class FtpTransferManager extends AbstractTransferManager {
 		this.multichunksPath = repoPath + "/multichunks";
 		this.databasesPath = repoPath + "/databases";
 		this.actionsPath = repoPath + "/actions";
+		this.transactionsPath = repoPath + "/transactions";
+		this.temporaryPath = repoPath + "/temporary";
 	}
 
 	@Override
@@ -163,6 +169,8 @@ public class FtpTransferManager extends AbstractTransferManager {
 			ftp.mkd(multichunksPath);
 			ftp.mkd(databasesPath);
 			ftp.mkd(actionsPath);
+			ftp.mkd(transactionsPath);
+			ftp.mkd(temporaryPath);
 		}
 		catch (IOException e) {
 			forceFtpDisconnect();
@@ -355,6 +363,12 @@ public class FtpTransferManager extends AbstractTransferManager {
 		}
 		else if (remoteFile.equals(ActionRemoteFile.class)) {
 			return actionsPath;
+		}
+		else if (remoteFile.equals(TransactionRemoteFile.class)) {
+			return transactionsPath;
+		}
+		else if (remoteFile.equals(TempRemoteFile.class)) {
+			return temporaryPath;
 		}
 		else {
 			return repoPath;
