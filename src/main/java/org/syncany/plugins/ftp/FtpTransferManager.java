@@ -45,6 +45,7 @@ import org.syncany.plugins.transfer.files.RemoteFile;
 import org.syncany.plugins.transfer.files.SyncanyRemoteFile;
 import org.syncany.plugins.transfer.files.TempRemoteFile;
 import org.syncany.plugins.transfer.files.TransactionRemoteFile;
+import org.syncany.util.StringUtil;
 
 /**
  * Implements a {@link TransferManager} based on an FTP storage backend for the
@@ -454,15 +455,29 @@ public class FtpTransferManager extends AbstractTransferManager {
 	@Override
 	public boolean testRepoFileExists() {
 		try {
-			String repoFilePath = getRemoteFile(new SyncanyRemoteFile());
-			String[] listRepoFile = ftp.listNames(repoFilePath);
+			SyncanyRemoteFile repoFile = new SyncanyRemoteFile();
+			String repoFilePath = getRemoteFile(repoFile);
+			
+			logger.log(Level.INFO, "- DEBUG listNames(" + repoFilePath + "): " + StringUtil.join(ftp.listNames(repoFilePath), ", "));
+			logger.log(Level.INFO, "- DEBUG listFiles(" + repoFilePath + "): " + StringUtil.join(ftp.listFiles(repoFilePath), ", "));
+			
+			String repoFileParentPath = (repoFilePath.indexOf("/") != -1) ? repoFilePath.substring(0, repoFilePath.lastIndexOf("/")) : "";
+			FTPFile[] listRepoFile = ftp.listFiles(repoFileParentPath);
 
-			if (listRepoFile != null && listRepoFile.length == 1) {
-				logger.log(Level.INFO, "testRepoFileExists: Repo file exists, list(syncany) returned one result.");
-				return true;
+			if (listRepoFile != null) {
+				for (FTPFile ftpFile : listRepoFile) {
+					if (ftpFile.getName().equals(repoFile.getName())) {
+
+						logger.log(Level.INFO, "testRepoFileExists: Repo file exists, list(repo) contained 'syncany' file.");
+						return true;
+					}
+				}
+				
+				logger.log(Level.INFO, "testRepoFileExists: Repo file DOES NOT exist: list(repo) DID NOT contain 'syncany' file:\n" + StringUtil.join(listRepoFile, "\n"));
+				return false;				
 			}
 			else {
-				logger.log(Level.INFO, "testRepoFileExists: Repo file DOES NOT exist.");
+				logger.log(Level.INFO, "testRepoFileExists: Repo file DOES NOT exist: list(repo) was NULL.");
 				return false;
 			}
 		}
