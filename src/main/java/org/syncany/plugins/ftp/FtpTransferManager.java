@@ -458,16 +458,12 @@ public class FtpTransferManager extends AbstractTransferManager {
 			SyncanyRemoteFile repoFile = new SyncanyRemoteFile();
 			String repoFilePath = getRemoteFile(repoFile);
 			
-			logger.log(Level.INFO, "- DEBUG listNames(" + repoFilePath + "): " + StringUtil.join(ftp.listNames(repoFilePath), ", "));
-			logger.log(Level.INFO, "- DEBUG listFiles(" + repoFilePath + "): " + StringUtil.join(ftp.listFiles(repoFilePath), ", "));
-			
 			String repoFileParentPath = (repoFilePath.indexOf("/") != -1) ? repoFilePath.substring(0, repoFilePath.lastIndexOf("/")) : "";
 			FTPFile[] listRepoFile = ftp.listFiles(repoFileParentPath);
 
 			if (listRepoFile != null) {
 				for (FTPFile ftpFile : listRepoFile) {
 					if (ftpFile.getName().equals(repoFile.getName())) {
-
 						logger.log(Level.INFO, "testRepoFileExists: Repo file exists, list(repo) contained 'syncany' file.");
 						return true;
 					}
@@ -486,5 +482,4 @@ public class FtpTransferManager extends AbstractTransferManager {
 			return false;
 		}
 	}
-
 }
