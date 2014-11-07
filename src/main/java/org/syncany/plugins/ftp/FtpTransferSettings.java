@@ -17,27 +17,39 @@
  */
 package org.syncany.plugins.ftp;
 
-import java.util.Map;
-
-import org.syncany.plugins.PluginOptionSpec;
-import org.syncany.plugins.PluginOptionSpec.ValueType;
-import org.syncany.plugins.PluginOptionSpecs;
-import org.syncany.plugins.transfer.StorageException;
+import org.simpleframework.xml.Element;
+import org.syncany.plugins.transfer.Encrypted;
+import org.syncany.plugins.transfer.Setup;
 import org.syncany.plugins.transfer.TransferSettings;
 
 /**
  * The FTP connection represents the settings required to connect to an
  * FTP-based storage backend. It can be used to initialize/create an 
- * {@link FtpTransferManager} and is part of the {@link FtpPlugin}.  
+ * {@link FtpTransferManager} and is part of the {@link FtpTransferPlugin}.  
  *
  * @author Philipp C. Heckel <philipp.heckel@gmail.com>
  */
 public class FtpTransferSettings extends TransferSettings {
+	@Element(name = "hostname", required = true)
+	@Setup(order = 1, description = "Hostname")
 	private String hostname;
+	
+	@Element(name = "username", required = true)
+	@Setup(order = 2, description = "Username")
 	private String username;
+	
+	@Element(name = "password", required = true)
+	@Setup(order = 3, sensitive = true, description = "Password")
+	@Encrypted
 	private String password;
+	
+	@Element(name = "path", required = true)
+	@Setup(order = 4, description = "Relative path")
 	private String path;
-	private int port;
+	
+	@Element(name = "port", required = false)
+	@Setup(order = 5, description = "Port")
+	private int port = 21;
 
 	public String getHostname() {
 		return hostname;
@@ -77,24 +89,6 @@ public class FtpTransferSettings extends TransferSettings {
 
 	public void setUsername(String username) {
 		this.username = username;
-	}
-
-	@Override
-	public void init(Map<String, String> optionValues) throws StorageException {
-		getOptionSpecs().validate(optionValues);
-		this.hostname = optionValues.get("hostname");
-		this.username = optionValues.get("username");
-		this.password = optionValues.get("password");
-		this.path = optionValues.get("path");
-		this.port = Integer.parseInt(optionValues.get("port"));
-	}
-
-	@Override
-	public PluginOptionSpecs getOptionSpecs() {
-		return new PluginOptionSpecs(new PluginOptionSpec("hostname", "Hostname", ValueType.STRING, true, false, null), new PluginOptionSpec(
-				"username", "Username", ValueType.STRING, true, false, null), new PluginOptionSpec("password", "Password", ValueType.STRING, true,
-				true, null), new PluginOptionSpec("path", "Path", ValueType.STRING, true, false, null), new PluginOptionSpec("port", "Port",
-				ValueType.INT, false, false, "21"));
 	}
 
 	@Override

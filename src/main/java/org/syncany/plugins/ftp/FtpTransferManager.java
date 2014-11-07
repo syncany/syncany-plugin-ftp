@@ -49,7 +49,7 @@ import org.syncany.util.StringUtil;
 
 /**
  * Implements a {@link TransferManager} based on an FTP storage backend for the
- * {@link FtpPlugin}. 
+ * {@link FtpTransferPlugin}. 
  * 
  * <p>Using an {@link FtpTransferSettings}, the transfer manager is configured and uses 
  * a well defined FTP folder to store the Syncany repository data. While repo and
@@ -98,9 +98,8 @@ public class FtpTransferManager extends AbstractTransferManager {
 		this.temporaryPath = repoPath + "/temporary";
 	}
 
-	@Override
-	public FtpTransferSettings getSettings() {
-		return (FtpTransferSettings) super.getSettings();
+	private FtpTransferSettings getSettings() {
+		return (FtpTransferSettings) settings;
 	}
 
 	@Override
