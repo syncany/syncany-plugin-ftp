@@ -45,10 +45,11 @@ import org.syncany.plugins.transfer.files.RemoteFile;
 import org.syncany.plugins.transfer.files.SyncanyRemoteFile;
 import org.syncany.plugins.transfer.files.TempRemoteFile;
 import org.syncany.plugins.transfer.files.TransactionRemoteFile;
+import org.syncany.util.StringUtil;
 
 /**
  * Implements a {@link TransferManager} based on an FTP storage backend for the
- * {@link FtpPlugin}. 
+ * {@link FtpTransferPlugin}. 
  * 
  * <p>Using an {@link FtpTransferSettings}, the transfer manager is configured and uses 
  * a well defined FTP folder to store the Syncany repository data. While repo and
@@ -97,9 +98,8 @@ public class FtpTransferManager extends AbstractTransferManager {
 		this.temporaryPath = repoPath + "/temporary";
 	}
 
-	@Override
-	public FtpTransferSettings getSettings() {
-		return (FtpTransferSettings) super.getSettings();
+	private FtpTransferSettings getSettings() {
+		return (FtpTransferSettings) settings;
 	}
 
 	@Override
@@ -454,15 +454,25 @@ public class FtpTransferManager extends AbstractTransferManager {
 	@Override
 	public boolean testRepoFileExists() {
 		try {
-			String repoFilePath = getRemoteFile(new SyncanyRemoteFile());
-			String[] listRepoFile = ftp.listNames(repoFilePath);
+			SyncanyRemoteFile repoFile = new SyncanyRemoteFile();
+			String repoFilePath = getRemoteFile(repoFile);
+			
+			String repoFileParentPath = (repoFilePath.indexOf("/") != -1) ? repoFilePath.substring(0, repoFilePath.lastIndexOf("/")) : "";
+			FTPFile[] listRepoFile = ftp.listFiles(repoFileParentPath);
 
-			if (listRepoFile != null && listRepoFile.length == 1) {
-				logger.log(Level.INFO, "testRepoFileExists: Repo file exists, list(syncany) returned one result.");
-				return true;
+			if (listRepoFile != null) {
+				for (FTPFile ftpFile : listRepoFile) {
+					if (ftpFile.getName().equals(repoFile.getName())) {
+						logger.log(Level.INFO, "testRepoFileExists: Repo file exists, list(repo) contained 'syncany' file.");
+						return true;
+					}
+				}
+				
+				logger.log(Level.INFO, "testRepoFileExists: Repo file DOES NOT exist: list(repo) DID NOT contain 'syncany' file:\n" + StringUtil.join(listRepoFile, "\n"));
+				return false;				
 			}
 			else {
-				logger.log(Level.INFO, "testRepoFileExists: Repo file DOES NOT exist.");
+				logger.log(Level.INFO, "testRepoFileExists: Repo file DOES NOT exist: list(repo) was NULL.");
 				return false;
 			}
 		}
@@ -471,5 +481,4 @@ public class FtpTransferManager extends AbstractTransferManager {
 			return false;
 		}
 	}
-
 }

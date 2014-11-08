@@ -24,7 +24,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.syncany.plugins.Plugins;
-import org.syncany.plugins.ftp.FtpPlugin;
+import org.syncany.plugins.ftp.FtpTransferPlugin;
 import org.syncany.plugins.ftp.FtpTransferSettings;
 import org.syncany.plugins.transfer.StorageException;
 import org.syncany.plugins.transfer.StorageTestResult;
@@ -124,12 +124,12 @@ public class FtpTransferManagerRepoTest {
 		return getPlugin().createTransferManager(connection, null).test(testCreateTarget);
 	}
 
-	public FtpPlugin getPlugin() {
-		return (FtpPlugin) Plugins.get("ftp");
+	public FtpTransferPlugin getPlugin() {
+		return (FtpTransferPlugin) Plugins.get("ftp");
 	}
 
-	public FtpTransferSettings workingConnection() {
-		FtpTransferSettings connection = (FtpTransferSettings) getPlugin().createSettings();
+	public FtpTransferSettings workingConnection() throws StorageException {
+		FtpTransferSettings connection = (FtpTransferSettings) getPlugin().createEmptySettings();
 
 		connection.setHostname(EmbeddedTestFtpServer.HOST);
 		connection.setPort(EmbeddedTestFtpServer.PORT);
